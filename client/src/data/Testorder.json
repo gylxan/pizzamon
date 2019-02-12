@@ -1,0 +1,13 @@
+{
+	"articles" : [
+		{
+			"customer": "Melanie",
+			"article": "Pizza 1"
+		},
+		{
+			"customer": "Stefan",
+			"article": "Pizza 2"
+		}
+	],
+	"finished" : false
+}
