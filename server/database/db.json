@@ -1,0 +1,187 @@
+{
+  "orders": [
+    {
+      "name": "test",
+      "articles": [
+        {
+          "customer": "Test1",
+          "article": "Pizza Salami"
+        },
+        {
+          "customer": "Guido",
+          "article": "Pizza Salami"
+        },
+        {
+          "customer": "Hallo du da",
+          "article": "Crispy Chicken Burger"
+        },
+        {
+          "customer": "I'm the pizzaman!",
+          "article": "Pizza Greenland"
+        },
+        {
+          "customer": "Max Pizzamann",
+          "article": "Pizza Texas"
+        }
+      ],
+      "finished": false
+    },
+    {
+      "name": "test2",
+      "articles": [
+        {
+          "customer": "Test",
+          "article": "Pizza Salami"
+        },
+        {
+          "customer": "Guido",
+          "article": "Burger"
+        },
+        {
+          "customer": "Kristina",
+          "article": "Curry"
+        }
+      ],
+      "finished": false
+    },
+    {
+      "name": "Bestellung 18.02.2012",
+      "articles": [],
+      "finished": false
+    },
+    {
+      "name": "Bestellung 25.02.2019",
+      "articles": [
+        {
+          "customer": "Guido",
+          "article": "Pizza Texas"
+        },
+        {
+          "customer": "Kristina",
+          "article": "Pizza Gemüsebeet"
+        }
+      ],
+      "finished": true
+    }
+  ],
+  "articles": [],
+  "restaurants": [
+    {
+      "name": "World of Pizza",
+      "articles": [
+        {
+          "name": "Pizza Salami",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Tonno",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Gemüsebeet",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Curry",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza California",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Chicken Kebap",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Philadelphia",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Cleveland",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Greenland",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Kansas",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Salamico Vegan",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Mistaer",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Montana",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Oklahoma Chicken",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Rucola",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Spring Rod",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Sucuk",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Texas",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Mango Traum",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Wop Dog",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Zingara",
+          "price": 6.5
+        },
+        {
+          "name": "Pizza Provence",
+          "price": 6.5
+        },
+        {
+          "name": "Burger BBQ Bacon",
+          "price": 7.12
+        },
+        {
+          "name": "World Burger",
+          "price": 7.12
+        },
+        {
+          "name": "Chipotle Beef Burger",
+          "price": 7.12
+        },
+        {
+          "name": "Chili Cheese Burger",
+          "price": 7.12
+        },
+        {
+          "name": "Crispy Chicken Burger",
+          "price": 7.12
+        },
+        {
+          "name": "Falafel Burger",
+          "price": 7.12
+        }
+      ]
+    }
+  ]
+}

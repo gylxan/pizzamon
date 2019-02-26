@@ -12,3 +12,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.text-right {
+	text-align: right;
+}
+.text-left {
+	text-align: left;
+}
+
+table td,
+table th {
+	vertical-align: middle;
+}
+table th.fitted,
+table td.fitted {
+	width: 1%;
+	white-space: nowrap;
+}
+
+.App-link {
+	color: #61dafb;
+}
+
+button.btn.btn-primary {
+	background-color: #182b6d;
+	border-color: #182b6d;
+}
+button.btn.btn-primary:focus {
+	box-shadow: 0 0 0 0.2rem rgba(24, 55, 176, 0.5);
+}
+button.btn.btn-primary:active {
+	background-color: #1837b0;
+	border-color: #1837b0;
+}

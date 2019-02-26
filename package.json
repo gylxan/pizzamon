@@ -4,12 +4,15 @@
 	"private": true,
 	"scripts": {
 		"client": "cd client && npm start",
-		"server": "nodemon server.js",
-		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+		"server": "nodemon server.js --ignore 'server/db.json'",
+		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+		"initiate": "node ./server/database/initiate.js",
+		"start" : "node ./server.js"
 	},
 	"dependencies": {
 		"body-parser": "1.18.3",
-		"express": "4.16.4"
+		"express": "4.16.4",
+		"lowdb": "1.0.0"
 	},
 	"devDependencies": {
 		"concurrently": "4.0.1"

@@ -1,0 +1,11 @@
+@media print {
+	body * {
+		font-size: 2.5rem;
+	}
+	.OrderPrintPage.container {
+		max-width: none;
+	}
+	.OrderPrintPage button {
+		visibility: hidden;
+	}
+}

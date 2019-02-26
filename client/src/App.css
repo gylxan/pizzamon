@@ -2,11 +2,11 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
 
+.App-logo {
+	animation: App-logo-spin infinite 20s linear;
+	height: 45vmin;
+}
 .App-header {
   min-height: 50vh;
   display: flex;
@@ -29,22 +29,6 @@
 }
 .App-form .form-control{
 	min-width: 10rem;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-.App button.btn.btn-primary {
-	background-color: #182b6d;
-	border-color: #182b6d;
-}
-.App button.btn.btn-primary:focus {
-	box-shadow: 0 0 0 0.2rem rgba(24, 55, 176, 0.5);
-}
-.App button.btn.btn-primary:active {
-	background-color: #1837b0;
-	border-color: #1837b0;
 }
 
 @keyframes App-logo-spin {
