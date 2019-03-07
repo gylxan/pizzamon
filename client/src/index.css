@@ -6,6 +6,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+	height:100%;
+	background-image: url('./images/pizza-background.jpg');
+	-webkit-background-size: cover;
+	background-size: 400px;
+	background-repeat: no-repeat;
+	background-position: top left;
+	background-color: black !important;
+	color:white !important;
 }
 
 code {

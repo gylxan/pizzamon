@@ -36,11 +36,16 @@ export default class OrderPage extends React.Component {
 			newArticle            : null,
 			generalError          : null,
 			newNameError          : null,
+			editCustomerError     : null,
 			showFinishOrderWarning: false,
 			loading               : true,
-			articles              : []
+			articles              : [],
+			articleToEdit         : null,
+			editCustomer          : null,
+			editArticle           : null
 		};
 		this.newNameInputRef = React.createRef();
+		this.editNameInputRef = React.createRef();
 	}
 
 	componentDidMount() {
@@ -150,6 +155,18 @@ export default class OrderPage extends React.Component {
 		});
 	};
 
+	handleEditNameChange = (event) => {
+		event.preventDefault();
+		this.setState({
+			editCustomer: event.currentTarget.value
+		});
+	};
+	handleEditArticleChange = (selectOption) => {
+		this.setState({
+			editArticle: selectOption
+		});
+	};
+
 	handleAddArticleClick = () => {
 		if (this.state.newName.trim() === '') {
 			this.setState({
@@ -184,14 +201,52 @@ export default class OrderPage extends React.Component {
 	};
 
 	handleEditArticleOfCustomerClick = (article) => {
-		this.handleDeleteArticleOfCustomerClick(article.customer).then(() => {
-			this.setState({
-				newName   : article.customer,
-				newArticle: this.mapArticleToSelectOption(article)
-			}, () => {
-				this.newNameInputRef.current.focus();
-			});
+		this.setState({
+			articleToEdit: article,
+			editCustomer : article.customer,
+			editArticle  : this.mapArticleToSelectOption({ name: article.article })
+		}, () => {
+			this.editNameInputRef.current.focus();
 		});
+	};
+
+	handleEditArticleSubmitClick = () => {
+		if (this.state.editCustomer.trim() === '') {
+			this.setState({
+				editCustomerError: 'Der Name ist leer'
+			});
+			return;
+		}
+		// Check a customer with the same new name doesn't exist
+		if (this.state.order.articles.filter(article => article.customer.toLowerCase() === this.state.editCustomer.toLowerCase()).length !== 0) {
+			this.setState({
+				editCustomerError: 'Der Name existiert bereits in der Bestellung'
+			});
+			return;
+		}
+		return axios.put('/api/orders/' + this.state.order.name + '/articles/' + this.state.articleToEdit.customer,
+			{ customer: this.state.editCustomer, article: this.state.editArticle.value })
+			.then((response) => {
+				const order = this.state.order;
+				// Run through articles, find the updated one and replaces old values with the new one
+				order.articles = order.articles.map(article => {
+					return article.customer.toLowerCase() === this.state.articleToEdit.customer.toLowerCase()
+						? { customer: this.state.editCustomer, article: this.state.editArticle.value }
+						: article;
+				});
+				this.setState({
+					articleToEdit    : null,
+					editCustomer     : null,
+					editArticle      : null,
+					order            : order,
+					editCustomerError: null
+				});
+			})
+			.catch((error) => {
+				this.setState({
+					generalError: error.response.data.error
+				});
+			});
 	};
 
 	handlePrintClick = () => {
@@ -234,8 +289,8 @@ export default class OrderPage extends React.Component {
 			}
 			costsSummary[article.article] += 1;
 		});
-		return <Table style={{ width: '50%' }}>
-			<thead className={'thead-light'}>
+		return <Table style={{ width: '50%' }} className={'table-dark'}>
+			<thead className={'thead-dark'}>
 			<tr>
 				<th>Anzahl</th>
 				<th>Artikel</th>
@@ -253,6 +308,61 @@ export default class OrderPage extends React.Component {
 		</Table>;
 	}
 
+	renderOrderArticleRow(article, articleNumber, possibleArticles, cost) {
+		if (this.state.articleToEdit !== null && this.state.articleToEdit.customer === article.customer) {
+			return <tr key={article.customer}>
+				<td className={'fitted'}>
+					{!this.state.order.finished &&
+					 <>
+						 <Button size={'sm'} color={'primary'}
+							 onClick={() => this.handleEditArticleSubmitClick()}>
+							 <i className={'fa fa-check'} />
+						 </Button>
+					 </>
+					}
+				</td>
+				<th scope={'row'} className={'fitted'}>{articleNumber}</th>
+				<td>
+					<Input placeholder='Max Pizzamann' onChange={this.handleEditNameChange} value={this.state.editCustomer}
+						name='name-edit' invalid={this.state.editCustomerError !== null} innerRef={this.editNameInputRef}
+						autoComplete={'given-name'} />
+					<FormFeedback>{this.state.editCustomerError}</FormFeedback>
+				</td>
+				<td>
+					<Select options={possibleArticles} isClearable={false} isRTL={false} name='article-edit'
+						onChange={this.handleEditArticleChange}
+						noOptionsMessage={() => `Kein Artikel gefunden`}
+						value={this.state.editArticle} styles={reactSelectStyles} />
+				</td>
+				<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
+				{this.state.order.finished && <td className={'fitted'}>
+					<div className={'Box'} />
+				</td>}
+			</tr>;
+		}
+		return <tr key={article.customer}>
+			<td className={'fitted  '}>
+				{!this.state.order.finished &&
+				 <>
+					 <Button size={'sm'} color={'primary'}
+						 onClick={() => this.handleEditArticleOfCustomerClick(article)}>
+						 <i className={'fa fa-pencil'} />
+					 </Button>{' '}
+					 <Button size={'sm'} color={'danger'} onClick={() => this.handleDeleteArticleOfCustomerClick(article.customer)}>
+						 <i className={'fa fa-trash'} /></Button>
+				 </>
+				}
+			</td>
+			<th scope={'row'} className={'fitted'}>{articleNumber}</th>
+			<td>{article.customer}</td>
+			<td>{article.article}</td>
+			<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
+			{this.state.order.finished && <td className={'fitted'}>
+				<div className={'Box'} />
+			</td>}
+		</tr>;
+	}
+
 	render() {
 
 		const costsAndRest = this.state.order !== null ? this.getCostsAndRest() : { rest: 0, costs: 0 };
@@ -265,8 +375,8 @@ export default class OrderPage extends React.Component {
 			<Overlay show={this.state.loading} />
 			{!this.state.loading
 				? (<>
-					<Table>
-						<thead className={'thead-light'}>
+					<Table className={'table-dark'}>
+						<thead>
 						<tr>
 							<th className={'fitted'} />
 							<th className={'fitted'}>#</th>
@@ -279,27 +389,7 @@ export default class OrderPage extends React.Component {
 						<tbody>
 						{this.state.order.articles.map((article) => {
 							const cost = costsAndRest.costs / this.state.order.articles.length;
-							return <tr key={article.customer}>
-								<td className={'fitted  '}>
-									{!this.state.order.finished &&
-									 <>
-										 <Button size={'sm'} color={'primary'}
-											 onClick={() => this.handleEditArticleOfCustomerClick(article)}>
-											 <i className={'fa fa-pencil'} />
-										 </Button>{' '}
-										 <Button size={'sm'} color={'danger'} onClick={() => this.handleDeleteArticleOfCustomerClick(article.customer)}>
-											 <i className={'fa fa-trash'} /></Button>
-									 </>
-									}
-								</td>
-								<th scope={'row'} className={'fitted'}>{counter++}</th>
-								<td>{article.customer}</td>
-								<td>{article.article}</td>
-								<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
-								{this.state.order.finished && <td className={'fitted'}>
-									<div className={'Box'} />
-								</td>}
-							</tr>;
+							return this.renderOrderArticleRow(article, counter++, selectArticleOptions, cost);
 						})}
 						{!this.state.order.finished
 							? <tr>

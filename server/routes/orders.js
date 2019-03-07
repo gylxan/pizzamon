@@ -82,8 +82,8 @@ router.route('/:name/articles/:customer')
 			next('Kunde ist leer');
 			return;
 		}
-		if (req.params.customer !== req.body.customer) {
-			next('Kunde in der URL unterscheidet sich von dem im Body');
+		if (!req.body.customer || req.body.customer.trim() === '') {
+			next('Kunde ist leer');
 			return;
 		}
 

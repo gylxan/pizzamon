@@ -17,7 +17,8 @@ export default class StartPage extends React.Component {
 			error          : null,
 			newOrderName   : 'Bestellung ' + stringDate,
 			orderToDelete  : null,
-			showDeleteModal: false
+			showDeleteModal: false,
+			loading: false
 		};
 	}
 
@@ -33,7 +34,7 @@ export default class StartPage extends React.Component {
 	};
 
 	loadOrders() {
-		axios.get('/api/orders').then((response) => {
+		return axios.get('/api/orders').then((response) => {
 			this.setState({
 				existingOrders: response.data,
 				currentOrder  : this.state.currentOrder === null ?(response.data[0].name || null) : this.state.currentOrder
@@ -43,7 +44,14 @@ export default class StartPage extends React.Component {
 
 	componentDidMount() {
 		if (this.state.existingOrders === null) {
-			this.loadOrders();
+			this.setState({
+				loading: true
+			});
+			this.loadOrders().then(() => {
+				this.setState({
+					loading: false
+				})
+			});
 		}
 	}
 
@@ -92,6 +100,10 @@ export default class StartPage extends React.Component {
 
 
 	render() {
+		// When loading, don't show anything
+		if(this.state.loading) {
+			return null;
+		}
 		return <div className='App'>
 			<header className='App-header'>
 				<img src={PizzaImage} className='App-logo' alt='logo' />

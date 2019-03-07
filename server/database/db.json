@@ -4,27 +4,23 @@
       "name": "test",
       "articles": [
         {
-          "customer": "Test1",
-          "article": "Pizza Salami"
-        },
-        {
           "customer": "Guido",
           "article": "Pizza Salami"
         },
         {
-          "customer": "Hallo du da",
-          "article": "Crispy Chicken Burger"
+          "customer": "Eric",
+          "article": "Pizza Kansas"
         },
         {
-          "customer": "I'm the pizzaman!",
-          "article": "Pizza Greenland"
+          "customer": "Conny",
+          "article": "Pizza Curry"
         },
         {
-          "customer": "Max Pizzamann",
-          "article": "Pizza Texas"
+          "customer": "Sven",
+          "article": "Pizza Chicken Kebap"
         }
       ],
-      "finished": false
+      "finished": true
     },
     {
       "name": "test2",
@@ -42,11 +38,16 @@
           "article": "Curry"
         }
       ],
-      "finished": false
+      "finished": true
     },
     {
       "name": "Bestellung 18.02.2012",
-      "articles": [],
+      "articles": [
+        {
+          "customer": "Guido",
+          "article": "Pizza Tonno"
+        }
+      ],
       "finished": false
     },
     {
