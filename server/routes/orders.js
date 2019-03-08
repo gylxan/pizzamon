@@ -6,13 +6,12 @@ const INDICATOR = 'orders';
 // Root without parameter
 router.route('/')
 	.get((req, res) => {
-		res.send(db.get(INDICATOR).value());
+		res.send(db.get(INDICATOR).sortBy('name').value());
 	})
 	.post((req, res, next) => {
 		if (!req.body.name || req.body.name.trim() === '') {
 			next('Name ist leer');
 		}
-		console.log(req.body.name);
 		// Check a order with this name doesn't exists
 		if (db.get(INDICATOR)
 			    .find({ name: req.body.name }).size().value() !== 0) {

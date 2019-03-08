@@ -16,6 +16,16 @@ body {
 	color:white !important;
 }
 
+.modal-content {
+	background-color: #212529 !important;
+}
+.modal-content > .modal-header {
+	border-bottom: 1px solid #c6c8ca !important;
+}
+.modal-content > .modal-footer {
+	border-top: 1px solid #c6c8ca !important;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -49,7 +59,9 @@ button.btn.btn-primary {
 button.btn.btn-primary:focus {
 	box-shadow: 0 0 0 0.2rem rgba(24, 55, 176, 0.5);
 }
-button.btn.btn-primary:active {
-	background-color: #1837b0;
-	border-color: #1837b0;
+button.btn.btn-primary:active,
+button.btn.btn-primary:hover
+{
+	background-color: #192861;
+	border-color: #192861;
 }

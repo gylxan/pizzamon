@@ -3,30 +3,48 @@ import PizzaImage from '../images/pizza.svg';
 import { Button, Col, Form, FormFeedback, FormGroup, Input, Label, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios';
 import './StartPage.css';
+import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
 
 export default class StartPage extends React.Component {
 	constructor(props) {
 		super(props);
 
-		const date = new Date();
-		const stringDate = (date.getDate() <= 9 ? '0' + date.getDate() : date.getDate()) + '.' + ((date.getMonth() + 1) <= 9 ? ('0' + (date.getMonth() + 1))
-			: (date.getMonth() + 1)) + '.' + date.getFullYear();
+
 		this.state = {
 			currentOrder   : null,
 			existingOrders : null,
 			error          : null,
-			newOrderName   : 'Bestellung ' + stringDate,
+			newOrderName   : 'Bestellung ' + StartPage.getDateString(),
 			orderToDelete  : null,
 			showDeleteModal: false,
-			loading: false
+			loading        : false
 		};
 	}
 
+	/**
+	 * Get a date string as "08.03.2019"
+	 * @return {string}
+	 */
+	static getDateString() {
+		const date = new Date();
+		return (date.getDate() <= 9 ? '0' + date.getDate() : date.getDate()) + '.' + ((date.getMonth() + 1) <= 9 ? ('0' + (date.getMonth() + 1))
+			: (date.getMonth() + 1)) + '.' + date.getFullYear();
+	}
+
+	/**
+	 * Handle change of the new order name
+	 * @param event
+	 */
 	handleNewOrderNameChange = (event) => {
 		this.setState({
 			newOrderName: event.currentTarget.value
 		});
 	};
+
+	/**
+	 * Handle change event of the order select
+	 * @param event
+	 */
 	handleOrderChange = (event) => {
 		this.setState({
 			currentOrder: event.currentTarget.value
@@ -37,7 +55,7 @@ export default class StartPage extends React.Component {
 		return axios.get('/api/orders').then((response) => {
 			this.setState({
 				existingOrders: response.data,
-				currentOrder  : this.state.currentOrder === null ?(response.data[0].name || null) : this.state.currentOrder
+				currentOrder  : this.state.currentOrder === null ? (response.data[0].name || null) : this.state.currentOrder
 			});
 		});
 	}
@@ -50,7 +68,7 @@ export default class StartPage extends React.Component {
 			this.loadOrders().then(() => {
 				this.setState({
 					loading: false
-				})
+				});
 			});
 		}
 	}
@@ -83,8 +101,8 @@ export default class StartPage extends React.Component {
 	};
 	handleOrderDeleteClick = (event) => {
 		this.setState({
-			showDeleteModal : true,
-			orderToDelete: this.state.currentOrder
+			showDeleteModal: true,
+			orderToDelete  : this.state.currentOrder
 		});
 	};
 	handleOrderDelete = (event) => {
@@ -101,7 +119,7 @@ export default class StartPage extends React.Component {
 
 	render() {
 		// When loading, don't show anything
-		if(this.state.loading) {
+		if (this.state.loading) {
 			return null;
 		}
 		return <div className='App'>
@@ -115,6 +133,7 @@ export default class StartPage extends React.Component {
 						<FormGroup>
 							<Input name={'newOrderName'} id={'newOrderNameInput'} placeholder={'Bestellungsname'} value={this.state.newOrderName}
 								onChange={this.handleNewOrderNameChange}
+								onKeyPress={(event) => onEnterKeyPressTriggerCallback(event, this.handleOrderCreateClick)}
 								invalid={this.state.error !== null} />
 							<FormFeedback>{this.state.error}</FormFeedback>
 						</FormGroup>
@@ -128,7 +147,7 @@ export default class StartPage extends React.Component {
 				<hr style={{ width: '60%' }} />
 				<Label for={'existingOrdersSelect'}>Existierende Bestellungen</Label>
 				<Row form>
-					<Col>
+					<Col sm={8}>
 						<FormGroup>
 							<Input type='select' name='existingOrders' id='existingOrdersSelect' onChange={this.handleOrderChange}>
 								{this.state.existingOrders !== null ? this.state.existingOrders.map((element) => {
@@ -137,10 +156,10 @@ export default class StartPage extends React.Component {
 							</Input>
 						</FormGroup>
 					</Col>
-					<Col>
+					<Col sm={4}>
 						<FormGroup>
 							<Button color={'primary'} onClick={this.handleOrderEditClick}><i className={'fa fa-pencil'} /> </Button>{' '}
-							<Button color={'danger'} onClick={this.handleOrderDeleteClick}><i className={'fa fa-trash'} /> </Button>
+							<Button color={'secondary'} onClick={this.handleOrderDeleteClick}><i className={'fa fa-trash'} /> </Button>
 						</FormGroup>
 					</Col>
 				</Row>

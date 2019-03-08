@@ -1,3 +1,7 @@
 #newOrderNameInput {
 	min-width: 13rem;
 }
+
+#existingOrdersSelect {
+	width: auto;
+}
