@@ -4,8 +4,8 @@
       "name": "Bestellung 18.02.2012",
       "articles": [
         {
-          "customer": "Guidoeeee",
-          "article": "Pizza Tonno"
+          "customer": "Guido",
+          "article": "Pizza California"
         }
       ],
       "finished": false
@@ -37,26 +37,6 @@
         },
         {
           "customer": "dsadasds",
-          "article": "Pizza Salami"
-        }
-      ],
-      "finished": true
-    },
-    {
-      "name": "bestellung 19.02.2019",
-      "articles": [
-        {
-          "customer": "Guido",
-          "article": "Pizza Texas"
-        }
-      ],
-      "finished": false
-    },
-    {
-      "name": "bestellung 1",
-      "articles": [
-        {
-          "customer": "dsadas",
           "article": "Pizza Salami"
         }
       ],

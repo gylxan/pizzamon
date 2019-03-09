@@ -65,3 +65,15 @@ button.btn.btn-primary:hover
 	background-color: #192861;
 	border-color: #192861;
 }
+
+.w-100percent{
+	width: 100%;
+}
+.flex-center {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+.margin-right-1 {
+	margin-right: 1rem;
+}

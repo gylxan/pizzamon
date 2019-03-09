@@ -1,6 +1,47 @@
-#newOrderNameInput {
-	min-width: 13rem;
+.App {
+	text-align: center;
 }
+
+.StartPage-logo {
+	animation: StartPage-logo-spin infinite 20s linear;
+	height: 45vmin;
+}
+.StartPage-header {
+	min-height: 50vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(10px + 2vmin);
+}
+.StartPage-header img{
+	margin-top: 3rem;
+}
+
+.StartPage-form {
+	margin-top: 3rem;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.StartPage-form .form-control{
+	min-width: 10rem;
+}
+.StartPage-form hr {
+	background-color: white;
+}
+
+@keyframes StartPage-logo-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 
 #existingOrdersSelect {
 	width: auto;

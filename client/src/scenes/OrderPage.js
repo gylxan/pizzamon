@@ -454,7 +454,7 @@ export default class OrderPage extends React.Component {
 			</td>
 			<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
 			{this.state.order.finished && <td className={'fitted'}>
-				<i className={'fa fa-square-o fa-lg'}/>
+				<i className={'fa fa-square-o fa-lg'} />
 			</td>}
 		</tr>;
 	}
@@ -468,15 +468,16 @@ export default class OrderPage extends React.Component {
 		switch (this.state.orderType) {
 			case ORDER_TYPES.INTERNET:
 				message = <div>
-					<Row><Col sm={12}><i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</Col></Row>
-					<Row><Col sm={12}>Webseite:{' '}<a href={this.state.restaurant.website} target={'_blank'}>{this.state.restaurant.website}</a></Col></Row>
+					<div className={'w-100percent'}><i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</div>
+					<div className={'w-100percent'}>Webseite:{' '}<a href={this.state.restaurant.website}
+						target={'_blank'}>{this.state.restaurant.website}</a></div>
 				</div>;
 				break;
 			case ORDER_TYPES.PHONE:
 			default:
 				message = <div>
-					<Row><Col sm={12}><i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen</Col></Row>
-					<Row><Col sm={12}>Telefonnummer:{' '}{this.state.restaurant.phone}</Col></Row>
+					<div className={'w-100percent'}><i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen</div>
+					<div className={'w-100percent'}>Telefonnummer:{' '}{this.state.restaurant.phone}</div>
 				</div>;
 				break;
 		}
@@ -546,7 +547,7 @@ export default class OrderPage extends React.Component {
 						}
 						</tbody>
 					</Table>
-					<Row style={{marginBottom : '1rem'}}>
+					<Row style={{ marginBottom: '1rem' }}>
 						<Col sm={6}>
 							{this.state.order.finished && this.renderOrderSummaryTable()}
 						</Col>

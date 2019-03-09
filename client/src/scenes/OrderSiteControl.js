@@ -4,10 +4,7 @@ import { Button, Col, Container, Row } from 'reactstrap';
 
 export default class OrderSiteControl extends React.Component {
 	render() {
-		return 	<Container>
-			<Row>
-				<Col sm={'9'} />
-				<Col sm={'3'} className={'text-right'}>
+		return 	<Container className={'w-100percent text-right'}>
 					<Button color={'secondary'} onClick={this.props.onBackClick}>Zurück</Button>{' '}
 					<Button color={'primary'} onClick={() => {
 						if(this.props.isOrderfinished) {
@@ -18,8 +15,6 @@ export default class OrderSiteControl extends React.Component {
 					}}>
 						{this.props.isOrderfinished ? 'Drucken' : 'Bestellen'}
 					</Button>
-				</Col>
-			</Row>
 		</Container>
 	}
 }
