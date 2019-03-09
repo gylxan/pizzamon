@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 5000;
 const host = process.env.HOST || '0.0.0.0';
 const apiRoutes = require('./server/routes/index');
 // Start app

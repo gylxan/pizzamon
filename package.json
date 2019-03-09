@@ -7,7 +7,7 @@
 		"server": "nodemon server.js --ignore 'server/db.json'",
 		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
 		"initiate": "node ./server/database/initiate.js",
-		"start": "node ./server.js"
+		"start": "npm run initiate && node ./server.js"
 	},
 	"dependencies": {
 		"body-parser": "1.18.3",
