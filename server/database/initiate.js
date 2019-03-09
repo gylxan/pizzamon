@@ -1,6 +1,5 @@
 const { db } = require('./database');
 
-
 console.log('Initiate database');
 db.defaults({
 	'orders'     : [],
