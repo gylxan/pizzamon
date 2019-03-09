@@ -85,9 +85,6 @@ export default class PizzaLoadingCanvas extends React.Component {
 				// slice
 				let startX = SLIZE_SIZE * Math.cos(rad);
 				let startY = SLIZE_SIZE * Math.sin(rad);
-				let endX = SLIZE_SIZE * Math.cos(rad + this.sliceRadians);
-				let endY = SLIZE_SIZE * Math.sin(rad + this.sliceRadians);
-				let varriation = [0.9, 0.7, 1.1, 1.2];
 				ctx.fillStyle = '#FBC02D';
 				ctx.beginPath();
 				ctx.moveTo(0, 0);

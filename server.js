@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 5000;
+const host = process.env.HOST || '0.0.0.0';
 const apiRoutes = require('./server/routes/index');
 // Start app
 app.use(bodyParser.json());
@@ -26,4 +27,4 @@ app.use(function errorHandler(err, req, res, next) {
 	res.status(400).send({ error: err });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, host, () => console.log(`Listening on ${host}:${port}`));

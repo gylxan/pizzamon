@@ -1,46 +1,6 @@
 {
   "orders": [
     {
-      "name": "test",
-      "articles": [
-        {
-          "customer": "Guido",
-          "article": "Pizza Salami"
-        },
-        {
-          "customer": "Eric",
-          "article": "Pizza Kansas"
-        },
-        {
-          "customer": "Conny",
-          "article": "Pizza Curry"
-        },
-        {
-          "customer": "Sven",
-          "article": "Pizza Chicken Kebap"
-        }
-      ],
-      "finished": true
-    },
-    {
-      "name": "test2",
-      "articles": [
-        {
-          "customer": "Test",
-          "article": "Pizza Salami"
-        },
-        {
-          "customer": "Guido",
-          "article": "Burger"
-        },
-        {
-          "customer": "Kristina",
-          "article": "Curry"
-        }
-      ],
-      "finished": true
-    },
-    {
       "name": "Bestellung 18.02.2012",
       "articles": [
         {
@@ -83,34 +43,13 @@
       "finished": true
     },
     {
-      "name": "Meine Bestellung 1",
+      "name": "bestellung 19.02.2019",
       "articles": [
         {
-          "customer": "Jürgen",
-          "article": "Chipotle Beef Burger"
-        },
-        {
-          "customer": "Kristina",
-          "article": "Burger BBQ Bacon"
-        },
-        {
           "customer": "Guido",
-          "article": "Burger BBQ Bacon"
-        },
-        {
-          "customer": "Guido2",
-          "article": "Pizza Salami"
-        },
-        {
-          "customer": "Simon",
-          "article": "Pizza Tonno"
+          "article": "Pizza Texas"
         }
       ],
-      "finished": true
-    },
-    {
-      "name": "bestellung 19.02.2019",
-      "articles": [],
       "finished": false
     },
     {
