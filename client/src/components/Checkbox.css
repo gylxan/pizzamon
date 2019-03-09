@@ -1,0 +1,10 @@
+.Checkbox {
+	cursor: pointer;
+}
+
+/**
+ * Add padding to unchecked checkbox to have the same box position as the checkbox with checked mark
+ */
+.Checkbox.unchecked {
+	padding-right: 3px;
+}

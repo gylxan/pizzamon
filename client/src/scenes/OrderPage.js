@@ -9,6 +9,7 @@ import OrderSiteControl from './OrderSiteControl';
 import Select from 'react-select';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
 import OrderSummaryTable from './components/OrderSummaryTable';
+import Checkbox from '../components/Checkbox';
 
 
 const ORDER_TYPES = {
@@ -454,7 +455,7 @@ export default class OrderPage extends React.Component {
 			</td>
 			<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
 			{this.state.order.finished && <td className={'fitted'}>
-				<i className={'fa fa-square-o fa-lg'} />
+				<Checkbox/>
 			</td>}
 		</tr>;
 	}

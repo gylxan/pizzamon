@@ -51,6 +51,24 @@
       "name": "Bestellung 08.03.2018",
       "articles": [],
       "finished": false
+    },
+    {
+      "name": "Bestellung 09.03.2019",
+      "articles": [
+        {
+          "customer": "ich",
+          "article": "Pizza Salami"
+        },
+        {
+          "customer": "Max Pizzaman",
+          "article": "Pizza Salami"
+        },
+        {
+          "customer": "Burger",
+          "article": "World Burger"
+        }
+      ],
+      "finished": false
     }
   ],
   "articles": [],

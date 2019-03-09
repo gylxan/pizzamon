@@ -1,6 +1,6 @@
 import React from 'react';
 import PizzaImage from '../images/pizza.svg';
-import { Button, Col, Form, FormFeedback, FormGroup, Input, Label, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Form, FormFeedback, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import axios from 'axios';
 import './StartPage.css';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
