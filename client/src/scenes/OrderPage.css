@@ -19,7 +19,7 @@
 
 @media print {
 	body * {
-		font-size: 2.5rem;
+		font-size: 18px;
 		color: black;
 	}
 	.OrderPage.container {
