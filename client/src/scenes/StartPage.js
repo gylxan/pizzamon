@@ -53,9 +53,16 @@ export default class StartPage extends React.Component {
 
 	loadOrders() {
 		return axios.get('/api/orders').then((response) => {
+			let newCurrentOrder = this.state.currentOrder;
+			// When current order is empty and we got orders from server, use the first one. Otherwise it stays null
+			if(this.state.currentOrder === null && response.data[0]) {
+				// And we got orders, use the first one. Otherwise it stays null
+				newCurrentOrder = response.data[0].name;
+			}
+
 			this.setState({
 				existingOrders: response.data,
-				currentOrder  : this.state.currentOrder === null ? (response.data[0].name || null) : this.state.currentOrder
+				currentOrder  : newCurrentOrder
 			});
 		});
 	}
@@ -168,7 +175,7 @@ export default class StartPage extends React.Component {
 				<Label for={'existingOrdersSelect'}>Existierende Bestellungen</Label>
 				<div className={'w-100percent flex-center'}>
 					<FormGroup className={'margin-right-1'}>
-						<Input type='select' name='existingOrders' id='existingOrdersSelect' onChange={this.handleOrderChange}>
+						<Input type='select' name='existingOrders' id='existingOrdersSelect' value={this.state.currentOrder || ''} onChange={this.handleOrderChange}>
 							{this.state.existingOrders !== null ? this.state.existingOrders.map((element) => {
 								return <option key={element.name} value={element.name}>{element.name}</option>;
 							}) : <option value={-1}>Lade Bestellungen</option>}
