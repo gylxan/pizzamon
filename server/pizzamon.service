@@ -1,0 +1,18 @@
+######################################################################################
+# Pizzamon Service
+# Copy this file to /etc/systemd/system/ to make the server controllable via systemctl
+# Run systemctl start pizzamon.service to start the server.
+# You also have to make the server.js executable via chmod +x ~/pizzamon/server.js
+######################################################################################
+[Unit]
+Description=Node.js Pizzamon service
+[Service]
+PIDFile=/tmp/pizzamon-99.pid
+User=<Your Username>
+Group=<Your Usergroup>
+Restart=always
+KillSignal=SIGQUIT
+WorkingDirectory=/home/<username>/pizzamon/
+ExecStart=/home/<username>/pizzamon/server.js
+[Install]
+WantedBy=multi-user.target

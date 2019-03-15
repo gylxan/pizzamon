@@ -96,6 +96,10 @@ db.defaults({
 					'price': 6.5
 				},
 				{
+					'name' : 'Pizza Hawaii',
+					'price': 6.5
+				},
+				{
 					'name' : 'BBQ Bacon Burger',
 					'price': 7.12
 				},
