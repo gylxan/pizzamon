@@ -16,16 +16,6 @@ body {
 	color:white !important;
 }
 
-.modal-content {
-	background-color: #212529 !important;
-}
-.modal-content > .modal-header {
-	border-bottom: 1px solid #c6c8ca !important;
-}
-.modal-content > .modal-footer {
-	border-top: 1px solid #c6c8ca !important;
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

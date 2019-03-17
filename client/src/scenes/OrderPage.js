@@ -1,37 +1,21 @@
 import React from 'react';
 import axios from 'axios';
-import { Alert, Button, Col, Container, FormFeedback, Modal, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
+import { Alert, Button, Col, Container, FormFeedback, ModalBody, ModalFooter, ModalHeader, Row, Table } from 'reactstrap';
 import Input from 'reactstrap/es/Input';
 import './OrderPage.css';
 import Overlay from '../components/Overlay';
 import OrderSiteControl from './OrderSiteControl';
 
-import Select from 'react-select';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
 import OrderSummaryTable from './components/OrderSummaryTable';
 import Checkbox from '../components/Checkbox';
+import Select from '../components/Select';
+import DarkModal from '../components/DarkModal';
 
 
 const ORDER_TYPES = {
 	PHONE   : 'phone',
 	INTERNET: 'internet'
-};
-
-const reactSelectStyles = {
-	control : (base, state) => ({
-		...base,
-		boxShadow  : state.isFocused
-			? '0 0 0 0.2rem rgba(0,123,255,.25)'
-			: base.boxShadow,
-		borderColor: state.isFocused
-			? '#80bdff'
-			: base.borderColor,
-		color      : '#495057'
-	}),
-	menuList: (base, state) => ({
-		...base,
-		color: '#495057'
-	})
 };
 
 export default class OrderPage extends React.Component {
@@ -330,6 +314,10 @@ export default class OrderPage extends React.Component {
 				});
 			});
 	};
+
+	/**
+	 * Handle cancel of editing an article
+	 */
 	handleEditArticleCancelClick = () => {
 		this.setState({
 			articleToEdit: null,
@@ -342,6 +330,9 @@ export default class OrderPage extends React.Component {
 		});
 	};
 
+	/**
+	 * Handle print order
+	 */
 	handlePrintClick = () => {
 		window.print();
 	};
@@ -401,10 +392,9 @@ export default class OrderPage extends React.Component {
 	 * @param {{customer : string, article: string}} article Article
 	 * @param {Number} position Position of article in the list
 	 * @param {Number} cost Costs for the article
-	 * @param {Array}  possibleArticles The possible Articles
 	 * @return {*}
 	 */
-	renderOrderArticleRow(article, position, cost, possibleArticles) {
+	renderOrderArticleRow(article, position, cost) {
 		const isCurrentlyEdited = this.state.articleToEdit && this.state.articleToEdit.customer === article.customer;
 		return <tr key={article.customer}>
 			<td className={'fitted'}>
@@ -447,15 +437,16 @@ export default class OrderPage extends React.Component {
 			<td>
 				{isCurrentlyEdited
 					?
-					<Select options={possibleArticles} isClearable={false} isRTL={false} name='article-edit'
+					<Select options={this.state.restaurant ? this.state.restaurant.articles.map(article => article.name) : []} isClearable={false} isRTL={false}
+						name='article-edit'
 						onChange={this.handleEditArticleChange}
 						noOptionsMessage={() => `Kein Artikel gefunden`}
-						value={this.state.edit.article} styles={reactSelectStyles} />
+						value={this.state.edit.article} />
 					: article.article}
 			</td>
 			<td>{parseFloat((cost * 100) / 100).toFixed(2) + '€'}</td>
 			{this.state.order.finished && <td className={'fitted'}>
-				<Checkbox/>
+				<Checkbox />
 			</td>}
 		</tr>;
 	}
@@ -487,8 +478,6 @@ export default class OrderPage extends React.Component {
 
 	render() {
 
-		const selectArticleOptions = this.state.restaurant ? this.state.restaurant.articles.map(OrderPage.mapArticleToSelectOption) : [];
-
 		let counter = 1;
 		return <Container className='OrderPage'>
 			{this.state.generalError && <Alert color={'danger'}>{this.state.generalError}</Alert>}
@@ -512,7 +501,7 @@ export default class OrderPage extends React.Component {
 							const cost = this.state.orderType === ORDER_TYPES.PHONE
 								? this.getArticlePrice(article.article)
 								: this.state.costs / this.state.order.articles.length;
-							return this.renderOrderArticleRow(article, counter++, cost, selectArticleOptions);
+							return this.renderOrderArticleRow(article, counter++, cost);
 						})}
 						<tr>
 							<th scope={'row'} colSpan={'4'} className={'text-right'}>Gesamt</th>
@@ -533,10 +522,11 @@ export default class OrderPage extends React.Component {
 										 <FormFeedback>{this.state.create.error}</FormFeedback>
 									 </Col>
 									 <Col sm={'5'}>
-										 <Select options={selectArticleOptions} isClearable={false} isRTL={false} name='article'
+										 <Select options={this.state.restaurant ? this.state.restaurant.articles.map(article => article.name) : []}
+											 isClearable={false} isRTL={false} name='article'
 											 onChange={this.handleNewArticleChange}
 											 noOptionsMessage={() => `Kein Artikel gefunden`}
-											 value={this.state.create.article} styles={reactSelectStyles} />
+											 value={this.state.create.article} />
 									 </Col>
 									 <Col sm={'2'} className={'text-right'}>
 										 <Button color={'primary'} onClick={this.handleAddArticleClick}><i className={'fa fa-plus'} /></Button>
@@ -559,7 +549,7 @@ export default class OrderPage extends React.Component {
 					<OrderSiteControl isOrderfinished={this.state.order.finished} onBackClick={this.handleBackClick}
 						onPrintClick={this.handlePrintClick} onOrderClick={this.handleOrderClick} />
 
-					<Modal isOpen={this.state.showFinishOrderWarning}>
+					<DarkModal isOpen={this.state.showFinishOrderWarning}>
 						<ModalHeader>
 							Bestellung abschließen
 						</ModalHeader>
@@ -574,7 +564,7 @@ export default class OrderPage extends React.Component {
 							}}>Abbrechen</Button>
 							<Button color='primary' onClick={this.handleOrderClick}>Bestellen</Button>{' '}
 						</ModalFooter>
-					</Modal>
+					</DarkModal>
 				</>)
 				: null}
 		</Container>;

@@ -1,9 +1,10 @@
 import React from 'react';
 import PizzaImage from '../images/pizza.svg';
-import { Button, Form, FormFeedback, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import axios from 'axios';
 import './StartPage.css';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
+import DarkModal from '../components/DarkModal';
 
 export default class StartPage extends React.Component {
 	constructor(props) {
@@ -187,7 +188,7 @@ export default class StartPage extends React.Component {
 					</FormGroup>
 				</div>
 			</Form>
-			<Modal isOpen={this.state.showDeleteModal} onClosed={() => this.setState({ orderToDelete: null })}>
+			<DarkModal isOpen={this.state.showDeleteModal} onClosed={() => this.setState({ orderToDelete: null })}>
 				<ModalHeader>
 					Bestellung {this.state.orderToDelete} löschen
 				</ModalHeader>
@@ -198,7 +199,7 @@ export default class StartPage extends React.Component {
 					<Button onClick={() => this.setState({ showDeleteModal: false })}>Nein</Button>{' '}
 					<Button color={'primary'} onClick={this.handleOrderDelete}>Ja</Button>
 				</ModalFooter>
-			</Modal>
+			</DarkModal>
 		</div>;
 	}
 }
