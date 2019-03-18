@@ -5,9 +5,14 @@
 	"scripts": {
 		"client": "cd client && npm start",
 		"server": "nodemon server.js --ignore 'server/db.json'",
+		"init-dev": "node ./server/database/initiate.js",
 		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-		"initiate": "node ./server/database/initiate.js",
-		"start": "npm run initiate && node ./server.js"
+		"build-client": "cd client && npm run build",
+		"copy-server": "cpx ./server.js ./build && cpx ./server/**/*.{js,service} ./build/server",
+		"copy-client": "cpx ./client/build/**/*.* ./build/client",
+		"build": "npm run build-client && npm run copy-client && npm run copy-server",
+		"init-prod": "node ./build/server/database/initiate.js",
+		"start": "npm run init-prod && cross-env NODE_ENV=production node ./server.js"
 	},
 	"dependencies": {
 		"body-parser": "1.18.3",
@@ -16,6 +21,9 @@
 	},
 	"devDependencies": {
 		"concurrently": "4.0.1",
-		"nodemon": "1.18.10"
+		"nodemon": "1.18.10",
+		"cpx": "1.5.0",
+		"cross-env": "5.2.0",
+		"minimist": "1.2.0"
 	}
 }

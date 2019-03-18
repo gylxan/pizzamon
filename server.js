@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 const express = require('express');
 const bodyParser = require('body-parser');
+var argv = require('minimist')(process.argv.slice(2));
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 5000;
-const host = process.env.HOST || '0.0.0.0';
+// Check whether port is set via cli arguments or environment
+const port = argv.port || process.env.PORT || 5000;
+// Check whether host is set via cli arguments or environment
+const host = argv.host || process.env.HOST || '0.0.0.0';
 const apiRoutes = require('./server/routes/index');
 // Start app
 app.use(bodyParser.json());
@@ -13,14 +16,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', apiRoutes);
 
 // Run in production
-process.env.NODE_ENV = 'production';
 if (process.env.NODE_ENV === 'production') {
+	console.log('Start server in production mode');
 	// Serve any static files
-	app.use(express.static(path.join(__dirname, 'client/build')));
+	app.use(express.static(path.join(__dirname, 'client')));
 	// Handle React routing, return all requests to React app
 	app.get('*', function (req, res) {
-		res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+		res.sendFile(path.join(__dirname, 'client', 'index.html'));
 	});
+} else {
+	console.log('Start server in development mode');
 }
 
 // Default error handling
