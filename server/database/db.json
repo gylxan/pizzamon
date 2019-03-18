@@ -1,5 +1,16 @@
 {
-  "orders": [],
+  "orders": [
+    {
+      "name": "Bestellung 16.03.2019",
+      "articles": [
+        {
+          "customer": "Guido",
+          "article": "Chili Cheese Burger"
+        }
+      ],
+      "finished": false
+    }
+  ],
   "articles": [],
   "restaurants": [
     {
