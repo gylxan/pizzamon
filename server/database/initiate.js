@@ -128,5 +128,21 @@ db.defaults({
 	]
 }).write();
 
+const orders = db.get('orders').value();
+console.log('Add \'purchaser\' and \'purchaserDetermination\' to orders');
+// Add purchaser to all orders
+orders.map((order) => {
+	if (order.purchaser === void 0) {
+		order.purchaser = null;
+	}
+	if (order.purchaserDetermination === void 0) {
+		order.purchaserDetermination = 'manual';
+	}
+	return order;
+});
+
+db.set('orders', orders).write();
+
+
 console.log('Database initiated');
 
