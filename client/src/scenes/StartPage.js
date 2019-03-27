@@ -1,10 +1,13 @@
 import React from 'react';
 import PizzaImage from '../images/pizza.svg';
-import { Button, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Col, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import axios from 'axios';
 import './StartPage.css';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
 import DarkModal from '../components/DarkModal';
+import Select from '../components/Select';
+import { PURCHASER_DETERMINATION } from '../services/constants/OrderConstants';
+import Entscheidomat from '../components/Entscheidomat';
 
 export default class StartPage extends React.Component {
 	constructor(props) {
@@ -12,13 +15,15 @@ export default class StartPage extends React.Component {
 
 
 		this.state = {
-			currentOrder   : null,
-			existingOrders : null,
-			error          : null,
-			newOrderName   : 'Bestellung ' + StartPage.getDateString(),
-			orderToDelete  : null,
-			showDeleteModal: false,
-			loading        : false
+			currentOrder          : null,
+			existingOrders        : [{ value: -1, label: 'Lade Bestellungen' }],
+			error                 : null,
+			newOrderName          : 'Bestellung ' + StartPage.getDateString(),
+			purchaserDetermination: { value: 'random', label: 'Zufällig' },
+			orderToDelete         : null,
+			showDeleteModal       : false,
+			showCreateModal       : false,
+			loading               : true
 		};
 	}
 
@@ -43,12 +48,22 @@ export default class StartPage extends React.Component {
 	};
 
 	/**
-	 * Handle change event of the order select
-	 * @param event
+	 * Handle change of the purchaser determination
+	 * @param {value: string, label: string} value Value
 	 */
-	handleOrderChange = (event) => {
+	handlePurchaserDeterminationChange = (value) => {
 		this.setState({
-			currentOrder: event.currentTarget.value
+			purchaserDetermination: value
+		});
+	};
+
+	/**
+	 * Handle change event of the order select
+	 * @param {"value": *, "label": *} value
+	 */
+	handleOrderChange = (value) => {
+		this.setState({
+			currentOrder: value
 		});
 	};
 
@@ -56,29 +71,28 @@ export default class StartPage extends React.Component {
 		return axios.get('/api/orders').then((response) => {
 			let newCurrentOrder = this.state.currentOrder;
 			// When current order is empty and we got orders from server, use the first one. Otherwise it stays null
-			if(this.state.currentOrder === null && response.data[0]) {
-				// And we got orders, use the first one. Otherwise it stays null
-				newCurrentOrder = response.data[0].name;
+			if (this.state.currentOrder === null && response.data[0]) {
+				newCurrentOrder = { value: response.data[0].name, label: response.data[0].name };
 			}
 
 			this.setState({
-				existingOrders: response.data,
+				existingOrders: response.data.map(element => {
+					return { value: element.name, label: element.name };
+				}),
 				currentOrder  : newCurrentOrder
 			});
 		});
 	}
 
 	componentDidMount() {
-		if (this.state.existingOrders === null) {
+		this.setState({
+			loading: true
+		});
+		this.loadOrders().then(() => {
 			this.setState({
-				loading: true
+				loading: false
 			});
-			this.loadOrders().then(() => {
-				this.setState({
-					loading: false
-				});
-			});
-		}
+		});
 	}
 
 	/**
@@ -97,9 +111,11 @@ export default class StartPage extends React.Component {
 		this.setState({
 			error: null
 		});
-		axios.post('/api/orders', { name: this.state.newOrderName, articles: [], finished: false }).then((response) => {
-			this.props.history.push('/order/' + this.state.newOrderName);
-		}).catch(error => {
+		axios.post('/api/orders',
+			{ name: this.state.newOrderName, articles: [], finished: false, purchaserDetermination: this.state.purchaserDetermination.value }).then(
+			(response) => {
+				this.props.history.push('/order/' + this.state.newOrderName);
+			}).catch(error => {
 			this.setState({
 				error: error.response.data.error
 			});
@@ -113,8 +129,8 @@ export default class StartPage extends React.Component {
 	handleOrderEditClick = (event) => {
 		event.preventDefault();
 		// Jump to order
-		if (this.state.currentOrder !== null && this.state.currentOrder !== '-1') {
-			this.props.history.push('/order/' + this.state.currentOrder);
+		if (this.state.currentOrder !== null && this.state.currentOrder.value !== '-1') {
+			this.props.history.push('/order/' + this.state.currentOrder.value);
 		}
 	};
 	/**
@@ -138,7 +154,7 @@ export default class StartPage extends React.Component {
 		event.preventDefault();
 		axios.delete('/api/orders/' + this.state.orderToDelete).then(() => {
 			// Filter out the deleted order
-			const ordersWithoutDeleted = this.state.existingOrders.filter(element => element.name !== this.state.orderToDelete);
+			const ordersWithoutDeleted = this.state.existingOrders.filter(element => element.value !== this.state.orderToDelete);
 			// Hide delete modal and set
 			this.setState({
 				showDeleteModal: false,
@@ -161,31 +177,36 @@ export default class StartPage extends React.Component {
 			<Form className={'StartPage-form'}>
 				<Label for={'newOrderNameInput'}>Neue Bestellung</Label>
 				<div className={'w-100percent flex-center'}>
-					<FormGroup className={'margin-right-1'}>
-						<Input name={'newOrderName'} id={'newOrderNameInput'} placeholder={'Bestellungsname'} value={this.state.newOrderName}
-							onChange={this.handleNewOrderNameChange}
-							onKeyPress={(event) => onEnterKeyPressTriggerCallback(event, this.handleOrderCreateClick)}
-							invalid={this.state.error !== null} />
-						<FormFeedback>{this.state.error}</FormFeedback>
-					</FormGroup>
-					<FormGroup>
-						<Button color={'primary'} onClick={this.handleOrderCreateClick}><i className={'fa fa-plus'} /> </Button>
-					</FormGroup>
+					<Col xs={8} md={6} lg={3}>
+						<FormGroup>
+							<Input name={'newOrderName'} id={'newOrderNameInput'} placeholder={'Bestellungsname'} value={this.state.newOrderName}
+								onChange={this.handleNewOrderNameChange}
+								onKeyPress={(event) => onEnterKeyPressTriggerCallback(event, this.handleOrderCreateClick)}
+								invalid={this.state.error !== null} />
+							<FormFeedback>{this.state.error}</FormFeedback>
+						</FormGroup>
+					</Col>
+					<Col xs={4} md={2} lg={1}>
+						<FormGroup className={'pull-left'}>
+							<Button color={'primary'} onClick={() => this.setState({ showCreateModal: true })}><i className={'fa fa-plus'} /> </Button>
+						</FormGroup>
+					</Col>
 				</div>
 				<hr style={{ width: '60%' }} />
 				<Label for={'existingOrdersSelect'}>Existierende Bestellungen</Label>
 				<div className={'w-100percent flex-center'}>
-					<FormGroup className={'margin-right-1'}>
-						<Input type='select' name='existingOrders' id='existingOrdersSelect' value={this.state.currentOrder || ''} onChange={this.handleOrderChange}>
-							{this.state.existingOrders !== null ? this.state.existingOrders.map((element) => {
-								return <option key={element.name} value={element.name}>{element.name}</option>;
-							}) : <option value={-1}>Lade Bestellungen</option>}
-						</Input>
-					</FormGroup>
-					<FormGroup>
-						<Button color={'primary'} onClick={this.handleOrderEditClick}><i className={'fa fa-pencil'} /> </Button>{' '}
-						<Button color={'secondary'} onClick={this.handleOrderDeleteClick}><i className={'fa fa-trash'} /> </Button>
-					</FormGroup>
+					<Col xs={8} md={6} lg={3}>
+						<FormGroup>
+							<Select name='existingOrders' id='existingOrdersSelect' value={this.state.currentOrder || ''}
+								onChange={this.handleOrderChange} options={this.state.existingOrders} />
+						</FormGroup>
+					</Col>
+					<Col xs={4} md={2} lg={1}>
+						<FormGroup className={'pull-left'}>
+							<Button color={'primary'} onClick={this.handleOrderEditClick}><i className={'fa fa-pencil'} /> </Button>{' '}
+							<Button color={'secondary'} onClick={this.handleOrderDeleteClick}><i className={'fa fa-trash'} /> </Button>
+						</FormGroup>
+					</Col>
 				</div>
 			</Form>
 			<DarkModal isOpen={this.state.showDeleteModal} onClosed={() => this.setState({ orderToDelete: null })}>
@@ -198,6 +219,31 @@ export default class StartPage extends React.Component {
 				<ModalFooter>
 					<Button onClick={() => this.setState({ showDeleteModal: false })}>Nein</Button>{' '}
 					<Button color={'primary'} onClick={this.handleOrderDelete}>Ja</Button>
+				</ModalFooter>
+			</DarkModal>
+			<DarkModal isOpen={this.state.showCreateModal} onClosed={() => this.setState({ orderToDelete: null })}>
+				<ModalHeader>
+					Einstellungen für neue Bestellung
+				</ModalHeader>
+				<ModalBody>
+					<Form className={'StartPage-NewOrder-form'}>
+						<FormGroup className={'row'}>
+							<Label sm={5} className={'col-form-label'} for={'purchaserDetermination'}>Ermittlung des Bestellers</Label>
+							<Col sm={7}>
+								<Select name={'purchaserDetermination'} id={'purchaserDetermination'} class={'w-100percent'}
+									options={[
+										{ value: PURCHASER_DETERMINATION.RANDOM, label: 'Zufällig' },
+										{ value: PURCHASER_DETERMINATION.MANUAL, label: 'Manuell' }]}
+									noOptionsMessage={() => `Keine Bestellung gefunden`}
+									onChange={this.handlePurchaserDeterminationChange} value={this.state.purchaserDetermination}
+								/>
+							</Col>
+						</FormGroup>
+					</Form>
+				</ModalBody>
+				<ModalFooter>
+					<Button onClick={() => this.setState({ showCreateModal: false })}>Abbrechen</Button>{' '}
+					<Button color={'primary'} onClick={this.handleOrderCreateClick}>Erstellen</Button>
 				</ModalFooter>
 			</DarkModal>
 		</div>;

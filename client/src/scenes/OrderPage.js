@@ -11,6 +11,8 @@ import OrderSummaryTable from './components/OrderSummaryTable';
 import Checkbox from '../components/Checkbox';
 import Select from '../components/Select';
 import DarkModal from '../components/DarkModal';
+import Entscheidomat from '../components/Entscheidomat';
+import { PURCHASER_DETERMINATION } from '../services/constants/OrderConstants';
 
 
 const ORDER_TYPES = {
@@ -172,6 +174,26 @@ export default class OrderPage extends React.Component {
 			});
 	};
 
+	/**
+	 * Handle random end when purchaser determination type is random
+	 * @param {string} purchaser Name of the purchaser
+	 */
+	handleOnRandomEnd = (purchaser) => {
+		const order = { ...this.state.order };
+		order.purchaser = purchaser;
+		axios.put('/api/orders/' + this.state.order.name, order)
+			.then((response) => {
+				this.setState({
+					order: order
+				});
+			})
+			.catch((error) => {
+				this.setState({
+					generalError: error.response.data.error
+				});
+			});
+	};
+
 	handleNewNameChange = (event) => {
 		event.preventDefault();
 		this.setState({
@@ -231,6 +253,11 @@ export default class OrderPage extends React.Component {
 		this.addArticleToOrder();
 	};
 
+	/**
+	 * Handle delete article of a customer
+	 * @param {string} customer Customer to delete article of
+	 * @return {Promise<AxiosResponse<any> | never>}
+	 */
 	handleDeleteArticleOfCustomerClick = (customer) => {
 		return axios.delete('/api/orders/' + this.state.order.name + '/articles/' + customer)
 			.then((response) => {
@@ -457,20 +484,60 @@ export default class OrderPage extends React.Component {
 	 */
 	renderOrderTypeMessage() {
 		let message = null;
+		const customers = this.state.order.articles.map(article => article.customer);
+		const startRandom = this.state.order.finished === true && this.state.order.purchaserDetermination === PURCHASER_DETERMINATION.RANDOM && this.state.order.purchaser === null;
+		console.log("start random?!", startRandom);
 		switch (this.state.orderType) {
 			case ORDER_TYPES.INTERNET:
-				message = <div>
-					<div className={'w-100percent'}><i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</div>
-					<div className={'w-100percent'}>Webseite:{' '}<a href={this.state.restaurant.website}
-						target={'_blank'}>{this.state.restaurant.website}</a></div>
-				</div>;
+				message = <>
+					<div className={'row w-100percent'}>
+						<div className={'col-12'}>
+						<i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</div>
+					</div>
+					<div className={'row w-100percent'}>
+						<div className={'col-6 text-right'}>
+							Webseite:
+						</div>
+						<div className={'col-6 text-left'}>
+							<a href={this.state.restaurant.website}
+								target={'_blank'}>{this.state.restaurant.website}</a>
+						</div>
+					</div>
+					<div className={'row w-100percent'}>
+						<div className={'col-6 text-right'}>
+							Besteller:
+						</div>
+						<div className={'col-6 text-left'}>
+							<Entscheidomat startOption={'?'} options={customers} start={startRandom} onEnd={this.handleOnRandomEnd} />
+						</div>
+					</div>
+				</>;
 				break;
 			case ORDER_TYPES.PHONE:
 			default:
-				message = <div>
-					<div className={'w-100percent'}><i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen</div>
-					<div className={'w-100percent'}>Telefonnummer:{' '}{this.state.restaurant.phone}</div>
-				</div>;
+				message = <>
+					<div className={'row w-100percent'}>
+						<div className={'col-12'}>
+							<i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen
+						</div>
+					</div>
+					<div className={'row w-100percent'}>
+						<div className={'col-6 text-right'}>
+							Telefonnummer:
+						</div>
+						<div className={'col-6 text-left'}>
+							{this.state.restaurant.phone}
+						</div>
+					</div>
+					<div className={'row w-100percent'}>
+						<div className={'col-6 text-right'}>
+							Besteller:
+						</div>
+						<div className={'col-6 text-left'}>
+							<Entscheidomat startOption={'?'} options={customers} start={startRandom} onEnd={this.handleOnRandomEnd} />
+						</div>
+					</div>
+				</>;
 				break;
 		}
 		return message;

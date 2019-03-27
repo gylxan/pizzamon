@@ -1,0 +1,6 @@
+const PURCHASER_DETERMINATION = {
+	MANUAL: 'manual',
+	RANDOM: 'random'
+};
+
+export {PURCHASER_DETERMINATION};
