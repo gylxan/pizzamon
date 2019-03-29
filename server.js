@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var argv = require('minimist')(process.argv.slice(2));
 const path = require('path');
+const migrate = require('./server/database/migrate');
+// Migrate database
+migrate();
 const app = express();
 // Check whether port is set via cli arguments or environment
 const port = argv.port || process.env.PORT || 5000;
