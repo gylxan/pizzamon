@@ -13,6 +13,11 @@ Group=<Your Usergroup>
 Restart=always
 KillSignal=SIGQUIT
 WorkingDirectory=/home/<username>/pizzamon/
+# Set Node environment to production
+Environment=NODE_ENV=production
+# Add port or host environment variables here
+#Environment=PORT=80
+#Environment=HOST=0.0.0.0
 ExecStart=/home/<username>/pizzamon/server.js
 [Install]
 WantedBy=multi-user.target
