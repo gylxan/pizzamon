@@ -8,9 +8,10 @@
 		"init-dev": "node ./server/database/initiate.js",
 		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
 		"build-client": "cd client && npm run build",
-		"copy-server": "cpx -C ./server.js ./build && cpx -C ./server/**/*.{js,service} ./build/server",
+		"build-server": "del-cli ./node_modules/* && npm install --production",
+		"copy-server": "cpx -C ./server.js ./build && cpx -C ./node_modules/**/*.* ./build/node_modules && && cpx -C ./package-lock.json ./build && cpx -C ./server/**/*.{js,service} ./build/server",
 		"copy-client": "cpx -C ./client/build/**/*.* ./build/client",
-		"build": "npm run build-client && npm run copy-client && npm run copy-server",
+		"build": "npm run build-client && npm run copy-client && npm run build-server && npm run copy-server",
 		"start": "cross-env NODE_ENV=production node ./server.js"
 	},
 	"dependencies": {
@@ -23,6 +24,7 @@
 		"concurrently": "4.0.1",
 		"nodemon": "1.18.10",
 		"cpx": "1.5.0",
-		"cross-env": "5.2.0"
+		"cross-env": "5.2.0",
+		"del-cli": "1.1.0"
 	}
 }
