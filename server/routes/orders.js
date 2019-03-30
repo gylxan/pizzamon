@@ -18,7 +18,10 @@ router.route('/')
 			next('Bestellung mit Name "%1" existiert bereits'.replace('%1', req.body.name));
 			return;
 		}
-		res.send(db.get(INDICATOR).push(req.body).write());
+		let order = req.body;
+		// Add created timestamp to order
+		order.createdAt = Date.now();
+		res.send(db.get(INDICATOR).push(order).write());
 	});
 
 
