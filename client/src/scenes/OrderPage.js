@@ -20,6 +20,9 @@ const ORDER_TYPES = {
 	INTERNET: 'internet'
 };
 
+/**
+ * The Order Page
+ */
 export default class OrderPage extends React.Component {
 
 	constructor(props) {
@@ -50,12 +53,15 @@ export default class OrderPage extends React.Component {
 	}
 
 	componentDidMount() {
+		// When the current order is null and not loaded yet, but is set in the query params -> load it
 		if (this.state.order === null && this.props.match.params.name) {
 			this.setState({
 				loading: true
 			});
 			Promise.all([
+				// Load the order
 				this.loadOrder(),
+				// Load the restaurant data
 				this.loadRestaurant()
 			]).then(() => {
 				this.setState({
@@ -70,6 +76,10 @@ export default class OrderPage extends React.Component {
 		}
 	}
 
+	/**
+	 * Load restaurant data
+	 * @return {Promise<AxiosResponse<any> | never>}
+	 */
 	loadRestaurant() {
 		return axios.get('/api/restaurants/World of Pizza')
 			.then((response) => {
@@ -106,6 +116,9 @@ export default class OrderPage extends React.Component {
 			});
 	}
 
+	/**
+	 * Add new article to order
+	 */
 	addArticleToOrder() {
 		axios.post('/api/orders/' + this.props.match.params.name + '/articles',
 			{ customer: this.state.create.customer, article: this.state.create.article.value })
@@ -121,6 +134,37 @@ export default class OrderPage extends React.Component {
 						this.calculateCosts();
 						this.createCustomerInputRef.current.focus();
 					});
+				});
+			})
+			.catch((error) => {
+				this.setState({
+					generalError: error.response.data.error
+				});
+			});
+	}
+
+	editArticleInOrder () {
+		return axios.put('/api/orders/' + this.state.order.name + '/articles/' + this.state.articleToEdit.customer,
+			{ customer: this.state.edit.customer, article: this.state.edit.article.value })
+			.then((response) => {
+				const order = this.state.order;
+				// Run through articles, find the updated one and replaces old values with the new one
+				order.articles = order.articles.map(article => {
+					return article.customer.toLowerCase() === this.state.articleToEdit.customer.toLowerCase()
+						? { customer: this.state.edit.customer, article: this.state.edit.article.value }
+						: article;
+				});
+				this.setState({
+					articleToEdit: null,
+					edit         : {
+						...this.state.edit,
+						customer: null,
+						article : null,
+						error   : null
+					},
+					order        : order
+				}, () => {
+					this.calculateCosts();
 				});
 			})
 			.catch((error) => {
@@ -230,7 +274,11 @@ export default class OrderPage extends React.Component {
 		});
 	};
 
+	/**
+	 * Handle add article button click
+	 */
 	handleAddArticleClick = () => {
+		// CHeck whether a customer has been entered
 		if (this.state.create.customer === null || this.state.create.customer.trim() === '') {
 			this.setState({
 				create: {
@@ -275,7 +323,10 @@ export default class OrderPage extends React.Component {
 				});
 			});
 	};
-
+	/**
+	 * Handle click on edit button of an article
+	 * @param article Articleto edit
+	 */
 	handleEditArticleOfCustomerClick = (article) => {
 		this.setState({
 			articleToEdit: article,
@@ -289,6 +340,10 @@ export default class OrderPage extends React.Component {
 		});
 	};
 
+	/**
+	 * Handle submit click of editing article
+	 * @return {Promise<AxiosResponse<any>>|void}
+	 */
 	handleEditArticleSubmitClick = () => {
 		if (this.state.edit.customer === null || this.state.edit.customer.trim() === '') {
 			this.setState({
@@ -312,34 +367,7 @@ export default class OrderPage extends React.Component {
 				return;
 			}
 		}
-		return axios.put('/api/orders/' + this.state.order.name + '/articles/' + this.state.articleToEdit.customer,
-			{ customer: this.state.edit.customer, article: this.state.edit.article.value })
-			.then((response) => {
-				const order = this.state.order;
-				// Run through articles, find the updated one and replaces old values with the new one
-				order.articles = order.articles.map(article => {
-					return article.customer.toLowerCase() === this.state.articleToEdit.customer.toLowerCase()
-						? { customer: this.state.edit.customer, article: this.state.edit.article.value }
-						: article;
-				});
-				this.setState({
-					articleToEdit: null,
-					edit         : {
-						...this.state.edit,
-						customer: null,
-						article : null,
-						error   : null
-					},
-					order        : order
-				}, () => {
-					this.calculateCosts();
-				});
-			})
-			.catch((error) => {
-				this.setState({
-					generalError: error.response.data.error
-				});
-			});
+		return this.editArticleInOrder();
 	};
 
 	/**
@@ -364,12 +392,15 @@ export default class OrderPage extends React.Component {
 		window.print();
 	};
 
-
+	/**
+	 * Calculate costs
+	 */
 	calculateCosts() {
 		// When order or restaurant hasn't been loaded yet, don't do anything
 		if (!this.state.order || !this.state.restaurant) {
 			return;
 		}
+		// Get count of all orders
 		let ordersCount = this.state.order.articles.length;
 		let costs = 0;
 		let orderType = ORDER_TYPES.INTERNET;
@@ -483,64 +514,50 @@ export default class OrderPage extends React.Component {
 	 * @return {*}
 	 */
 	renderOrderTypeMessage() {
-		let message = null;
 		const customers = this.state.order.articles.map(article => article.customer);
-		const startRandom = this.state.order.finished === true && this.state.order.purchaserDetermination === PURCHASER_DETERMINATION.RANDOM && this.state.order.purchaser === null;
-		console.log("start random?!", startRandom);
+		const orderFinishedAndRandomDetermination = this.state.order.finished === true && this.state.order.purchaserDetermination === PURCHASER_DETERMINATION.RANDOM;
+
+		let orderType = null, informationTitle = null, informationText= null;
 		switch (this.state.orderType) {
 			case ORDER_TYPES.INTERNET:
-				message = <>
-					<div className={'row w-100percent'}>
-						<div className={'col-12'}>
-						<i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</div>
-					</div>
-					<div className={'row w-100percent'}>
-						<div className={'col-6 text-right'}>
-							Webseite:
-						</div>
-						<div className={'col-6 text-left'}>
-							<a href={this.state.restaurant.website}
-								target={'_blank'}>{this.state.restaurant.website}</a>
-						</div>
-					</div>
-					<div className={'row w-100percent'}>
-						<div className={'col-6 text-right'}>
-							Besteller:
-						</div>
-						<div className={'col-6 text-left'}>
-							<Entscheidomat startOption={'?'} options={customers} start={startRandom} onEnd={this.handleOnRandomEnd} />
-						</div>
-					</div>
-				</>;
+				orderType = <><i className={'fa fa-cloud fa-lg'} /> Im Internet bestellen</>;
+				informationTitle = 'Webseite:';
+				informationText = <a href={this.state.restaurant.website}
+					target={'_blank'}>{this.state.restaurant.website}</a>;
 				break;
 			case ORDER_TYPES.PHONE:
 			default:
-				message = <>
-					<div className={'row w-100percent'}>
-						<div className={'col-12'}>
-							<i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen
-						</div>
-					</div>
-					<div className={'row w-100percent'}>
-						<div className={'col-6 text-right'}>
-							Telefonnummer:
-						</div>
-						<div className={'col-6 text-left'}>
-							{this.state.restaurant.phone}
-						</div>
-					</div>
-					<div className={'row w-100percent'}>
-						<div className={'col-6 text-right'}>
-							Besteller:
-						</div>
-						<div className={'col-6 text-left'}>
-							<Entscheidomat startOption={'?'} options={customers} start={startRandom} onEnd={this.handleOnRandomEnd} />
-						</div>
-					</div>
-				</>;
+				orderType = <><i className={'fa fa-phone fa-lg'} /> Per Telefon bestellen</>;
+				informationTitle = 'Telefonnummer:';
+				informationText = this.state.restaurant.phone;
 				break;
 		}
-		return message;
+		return <>
+			<div className={'row w-100percent'}>
+				<div className={'col-12'}>
+					{orderType}
+				</div>
+			</div>
+			<div className={'row w-100percent'}>
+				<div className={'col-6 text-right'}>
+					{informationTitle}
+				</div>
+				<div className={'col-6 text-left'}>
+					{informationText}
+				</div>
+			</div>
+			<div className={'row w-100percent'}>
+				<div className={'col-6 text-right'}>
+					Besteller:
+				</div>
+				<div className={'col-6 text-left'}>
+					<Entscheidomat
+						startOption={orderFinishedAndRandomDetermination && this.state.order.purchaser !== null ? this.state.order.purchaser : '?'}
+						options={customers}
+						start={orderFinishedAndRandomDetermination && this.state.order.purchaser === null} onEnd={this.handleOnRandomEnd} />
+				</div>
+			</div>
+		</>;
 	}
 
 	render() {
