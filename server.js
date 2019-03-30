@@ -6,6 +6,7 @@ const path = require('path');
 const migrate = require('./server/database/migrate');
 // Migrate database
 migrate();
+// Create express server app
 const app = express();
 // Check whether port is set via cli arguments or environment
 const port = argv.port || process.env.PORT || 5000;
