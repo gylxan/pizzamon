@@ -1,13 +1,12 @@
 import React from 'react';
 import PizzaImage from '../images/pizza.svg';
-import { Button, Col, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { Button, Col, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import axios from 'axios';
 import './StartPage.css';
 import { onEnterKeyPressTriggerCallback } from '../services/utils/EventHandlerUtils';
 import DarkModal from '../components/DarkModal';
 import Select from '../components/Select';
 import { PURCHASER_DETERMINATION } from '../services/constants/OrderConstants';
-import Entscheidomat from '../components/Entscheidomat';
 
 export default class StartPage extends React.Component {
 	constructor(props) {
@@ -18,7 +17,7 @@ export default class StartPage extends React.Component {
 			currentOrder          : null,
 			existingOrders        : [{ value: -1, label: 'Lade Bestellungen' }],
 			error                 : null,
-			newOrderName          : 'Bestellung ' + StartPage.getDateString(),
+			newOrderName          : null,
 			purchaserDetermination: { value: 'random', label: 'Zufällig' },
 			orderToDelete         : null,
 			showDeleteModal       : false,
@@ -67,16 +66,28 @@ export default class StartPage extends React.Component {
 		});
 	};
 
+	/**
+	 * Load the orders
+	 * @return {Promise<AxiosResponse<any> | never>}
+	 */
 	loadOrders() {
 		return axios.get('/api/orders').then((response) => {
 			let newCurrentOrder = this.state.currentOrder;
+			const orders = response.data;
+			// Sort orders by creation date (first is new created) and name
+			orders.sort((a, b)=> {
+				const createdAt = b.createdAt - a.createdAt;
+				if (createdAt !== 0) {
+					return createdAt;
+				}
+				return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+			});
 			// When current order is empty and we got orders from server, use the first one. Otherwise it stays null
-			if (this.state.currentOrder === null && response.data[0]) {
-				newCurrentOrder = { value: response.data[0].name, label: response.data[0].name };
+			if (this.state.currentOrder === null && orders[0]) {
+				newCurrentOrder = { value: orders[0].name, label: orders[0].name };
 			}
-
 			this.setState({
-				existingOrders: response.data.map(element => {
+				existingOrders: orders.map(element => {
 					return { value: element.name, label: element.name };
 				}),
 				currentOrder  : newCurrentOrder
@@ -84,7 +95,11 @@ export default class StartPage extends React.Component {
 		});
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	componentDidMount() {
+		// Set into loading state and load orders
 		this.setState({
 			loading: true
 		});
@@ -102,7 +117,7 @@ export default class StartPage extends React.Component {
 	handleOrderCreateClick = (event) => {
 		event.preventDefault();
 		// Check whether the new order name is empty
-		if (this.state.newOrderName.trim() === '') {
+		if (!this.state.newOrderName || this.state.newOrderName.trim() === '') {
 			this.setState({
 				error: 'Es muss ein Name für die Bestellung eingegeben werden'
 			});
@@ -112,7 +127,9 @@ export default class StartPage extends React.Component {
 			error: null
 		});
 		axios.post('/api/orders',
-			{ name: this.state.newOrderName, articles: [], finished: false, purchaserDetermination: this.state.purchaserDetermination.value }).then(
+			{ name: this.state.newOrderName, articles: [], finished: false, purchaser: null,
+				purchaserDetermination: this.state.purchaserDetermination.value
+			}).then(
 			(response) => {
 				this.props.history.push('/order/' + this.state.newOrderName);
 			}).catch(error => {
@@ -152,14 +169,14 @@ export default class StartPage extends React.Component {
 	 */
 	handleOrderDelete = (event) => {
 		event.preventDefault();
-		axios.delete('/api/orders/' + this.state.orderToDelete).then(() => {
+		axios.delete('/api/orders/' + this.state.orderToDelete.value).then(() => {
 			// Filter out the deleted order
-			const ordersWithoutDeleted = this.state.existingOrders.filter(element => element.value !== this.state.orderToDelete);
+			const ordersWithoutDeleted = this.state.existingOrders.filter(element => element.value !== this.state.orderToDelete.value);
 			// Hide delete modal and set
 			this.setState({
 				showDeleteModal: false,
 				existingOrders : ordersWithoutDeleted,
-				currentOrder   : ordersWithoutDeleted.length > 0 ? ordersWithoutDeleted[0].name : null
+				currentOrder   : ordersWithoutDeleted.length > 0 ? ordersWithoutDeleted[0] : null
 			});
 		});
 	};
@@ -179,7 +196,7 @@ export default class StartPage extends React.Component {
 				<div className={'w-100percent flex-center'}>
 					<Col xs={8} md={6} lg={3}>
 						<FormGroup>
-							<Input name={'newOrderName'} id={'newOrderNameInput'} placeholder={'Bestellungsname'} value={this.state.newOrderName}
+							<Input name={'newOrderName'} id={'newOrderNameInput'} placeholder={'Bestellungsname'} value={this.state.newOrderName || ''}
 								onChange={this.handleNewOrderNameChange}
 								onKeyPress={(event) => onEnterKeyPressTriggerCallback(event, this.handleOrderCreateClick)}
 								invalid={this.state.error !== null} />
@@ -198,7 +215,9 @@ export default class StartPage extends React.Component {
 					<Col xs={8} md={6} lg={3}>
 						<FormGroup>
 							<Select name='existingOrders' id='existingOrdersSelect' value={this.state.currentOrder || ''}
-								onChange={this.handleOrderChange} options={this.state.existingOrders} />
+								onChange={this.handleOrderChange} options={this.state.existingOrders}
+								noOptionsMessage={() => `Keine Bestellung gefunden`}
+							/>
 						</FormGroup>
 					</Col>
 					<Col xs={4} md={2} lg={1}>
@@ -211,10 +230,10 @@ export default class StartPage extends React.Component {
 			</Form>
 			<DarkModal isOpen={this.state.showDeleteModal} onClosed={() => this.setState({ orderToDelete: null })}>
 				<ModalHeader>
-					Bestellung {this.state.orderToDelete} löschen
+					Bestellung {this.state.orderToDelete ? this.state.orderToDelete.label : ''} löschen
 				</ModalHeader>
 				<ModalBody>
-					Soll die Bestellung {this.state.orderToDelete} wirklich gelöscht werden?
+					Soll die Bestellung <i>{this.state.orderToDelete ? this.state.orderToDelete.label : ''}</i> wirklich gelöscht werden?
 				</ModalBody>
 				<ModalFooter>
 					<Button onClick={() => this.setState({ showDeleteModal: false })}>Nein</Button>{' '}
@@ -231,10 +250,11 @@ export default class StartPage extends React.Component {
 							<Label sm={5} className={'col-form-label'} for={'purchaserDetermination'}>Ermittlung des Bestellers</Label>
 							<Col sm={7}>
 								<Select name={'purchaserDetermination'} id={'purchaserDetermination'} class={'w-100percent'}
+									isClearable={false}
 									options={[
 										{ value: PURCHASER_DETERMINATION.RANDOM, label: 'Zufällig' },
 										{ value: PURCHASER_DETERMINATION.MANUAL, label: 'Manuell' }]}
-									noOptionsMessage={() => `Keine Bestellung gefunden`}
+									noOptionsMessage={() => `Keine Option gefunden`}
 									onChange={this.handlePurchaserDeterminationChange} value={this.state.purchaserDetermination}
 								/>
 							</Col>
