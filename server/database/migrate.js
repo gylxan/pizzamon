@@ -5,11 +5,12 @@ const migrate = () => {
 	console.log('Migration of database started');
 	initiateDatabase();
 	addPurchaserAndPurchaserDetermination();
+	addCreatedTimestampToOrders();
 	console.log('Migration of database finished');
 
 };
 const initiateDatabase = () => {
-	console.log('Add default to database');
+	console.log('Add defaults to database');
 	db.defaults({
 		'orders'     : [],
 		'restaurants': [
@@ -137,7 +138,7 @@ const initiateDatabase = () => {
 		]
 	}).write();
 
-	console.log('Defaults added');
+	console.log('Defaults added to database');
 };
 
 /**
@@ -157,6 +158,25 @@ const addPurchaserAndPurchaserDetermination = () => {
 		return order;
 	});
 	db.set('orders', orders).write();
+	console.log('\'purchaser\' and \'purchaserDetermination\' added to orders');
+};
+
+/**
+ * Add "createdAt" timestamp to all ordersto Database
+ */
+const addCreatedTimestampToOrders = () => {
+	const orders = db.get('orders').value();
+	console.log('Add \'createdAt\' to orders');
+	// Add createdAt to all orders
+	const timestamp = Date.now();
+	orders.map((order) => {
+		if (order.createdAt === void 0) {
+			order.createdAt = timestamp;
+		}
+		return order;
+	});
+	db.set('orders', orders).write();
+	console.log('\'createdAt\' added to orders');
 };
 
 module.exports = migrate;
