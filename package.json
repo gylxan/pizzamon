@@ -8,8 +8,8 @@
 		"init-dev": "node ./server/database/initiate.js",
 		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
 		"build-client": "cd client && npm run build",
-		"build-server": "del-cli ./node_modules/* && npm install --production",
-		"copy-server": "cpx -C ./server.js ./build && cpx -C ./node_modules/**/*.* ./build/node_modules && && cpx -C ./package-lock.json ./build && cpx -C ./server/**/*.{js,service} ./build/server",
+		"build-server": "cpx -C ./package.json ./build && del-cli ./build/node_modules && cd ./build && npm install --production && del-cli -f ./package.json",
+		"copy-server": "cpx -C ./server.js ./build && cpx -C ./server/**/*.{js,service} ./build/server",
 		"copy-client": "cpx -C ./client/build/**/*.* ./build/client",
 		"build": "npm run build-client && npm run copy-client && npm run build-server && npm run copy-server",
 		"start": "cross-env NODE_ENV=production node ./server.js"
