@@ -5,7 +5,7 @@
 	"proxy": "http://localhost:5000/",
 	"dependencies": {
 		"axios": "0.18.0",
-		"bootstrap": "4.2.1",
+		"bootstrap": "4.3.1",
 		"react": "16.7.0",
 		"react-app-polyfill": "^0.2.2",
 		"react-dom": "16.7.0",
