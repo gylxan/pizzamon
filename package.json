@@ -2,6 +2,11 @@
 	"name": "pizzamon",
 	"version": "0.1.0",
 	"private": true,
+	"author": {
+		"name": "Guido Lange",
+		"email": "guidolange90@gmail.com",
+		"url": "https://github.com/gylxan"
+	},
 	"scripts": {
 		"client": "cd client && npm start",
 		"server": "nodemon server.js --ignore server/database/db.json",
