@@ -1,0 +1,26 @@
+version: '3.5'
+
+services:
+
+  pizzamon:
+    container_name: pizzamon
+    command: npm run dev
+    # use local bind mount, for dev purposes only
+    volumes:
+      - app_data:/usr/src/app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+      - '5000:5000'
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  app_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/app_data
