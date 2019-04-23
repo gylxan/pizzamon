@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 /.idea
 server/database/db.json
+
+# docker
+app_data
